@@ -1,5 +1,5 @@
 import GameLoop from '../GameLoop'
-import Vector2 from '../Vector2'
+import Vector2 from '../geometry2D/Vector2'
 
 export default class Input {
 	private constructor() {}

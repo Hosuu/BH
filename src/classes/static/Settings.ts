@@ -28,7 +28,7 @@ export default class Settings {
 	}
 
 	public static get<T extends keyof SettingsMap>(key: T): SettingsMap[T] {
-		if (this.current[key]) return this.current[key]
+		if (this.current[key] !== undefined) return this.current[key]
 		else return defaultSettings[key]
 	}
 
@@ -38,6 +38,8 @@ export default class Settings {
 
 		if (value !== defaultSettings[key]) this.current[key] = value
 		else delete this.current[key]
+
+		console.log(this.current)
 
 		this.emitChange(key, value, prevValue)
 	}

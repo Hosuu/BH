@@ -1,10 +1,13 @@
 import Audio from './Audio'
 
 export default class Samples {
-	private static collection = new Map<string, AudioBuffer>()
+	private static collection: Map<string, AudioBuffer>
+	static {
+		this.collection = new Map<string, AudioBuffer>()
+	}
 
 	public static batchLoad(list: string[]): Promise<string> {
-		return Promise.all(list.map(this.load)).then(
+		return Promise.all(list.map((path) => this.load(path))).then(
 			() => `Successfully loaded ${list.length} samples!`
 		)
 	}

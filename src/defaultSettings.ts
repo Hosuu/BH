@@ -11,4 +11,5 @@ export default {
 
 	//Gameplay
 	autoBomb: false,
-} as const
+	mouseControl: true,
+}

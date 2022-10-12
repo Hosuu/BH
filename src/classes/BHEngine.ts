@@ -1,9 +1,11 @@
-import Samples from './Audio/Samples'
-import Track from './Audio/Track'
+import Audio from './audio/Audio'
+import Samples from './audio/Samples'
+import Track from './audio/Track'
 import GameLoop from './GameLoop'
-import Input from './static/Input'
+import Vector2 from './geometry2D/Vector2'
+import Input, { Key } from './static/Input'
+import Player from './static/Player'
 import Settings from './static/Settings'
-import Vector2 from './Vector2'
 
 export default class BHEngine extends GameLoop {
 	public canvas: HTMLCanvasElement
@@ -30,9 +32,12 @@ export default class BHEngine extends GameLoop {
 		this.position = new Vector2(canvas.width * 0.5, canvas.height * 0.8)
 		this.isPrecise = false
 		this.track = null
-		Samples.load('./assets/mp3/Intersect Thunderbolt.mp3').then(() => {
-			this.track = new Track(Samples.get('./assets/mp3/Intersect Thunderbolt.mp3')!)
-		})
+		Samples.batchLoad(['./assets/mp3/Intersect Thunderbolt.mp3', './assets/mp3/bomb.wav']).then(
+			() => {
+				this.track = new Track(Samples.get('./assets/mp3/Intersect Thunderbolt.mp3')!)
+				this.track.volume = 0.1
+			}
+		)
 
 		addEventListener('resize', this.onResize.bind(this))
 	}
@@ -43,35 +48,23 @@ export default class BHEngine extends GameLoop {
 
 	protected update(dt: number): void {
 		if (!this.track) return
-		if (this.track.isPaused && Input.getAnyKeyDown()) this.track.play()
+		if (this.track.isPaused && Input.getAnyKeyDown() && this.track.progress < 1)
+			this.track.play()
 		if (this.track.isPaused) return
 
-		const input = new Vector2()
-		input.add(Vector2.RIGHT.multiply(+Input.get(Settings.get('KEYBIND_moveRight'))))
-		input.add(Vector2.LEFT.multiply(+Input.get(Settings.get('KEYBIND_moveLeft'))))
-		input.add(Vector2.UP.multiply(+Input.get(Settings.get('KEYBIND_moveUp'))))
-		input.add(Vector2.DOWN.multiply(+Input.get(Settings.get('KEYBIND_moveDown'))))
-		input.normalize()
+		if (Input.getDown(Key.C)) Settings.set('mouseControl', !Settings.get('mouseControl'))
 
-		const mouseWheel = Input.getMouseWheel()
-		if (this.track && mouseWheel.frame === GameLoop.getCurrentFrameId() - 1) {
-			this.track.playbackRate += mouseWheel.y / 1000
-		}
+		if (Input.getDown(Settings.get('KEYBIND_bomb')))
+			Audio.playSample(Samples.get('./assets/mp3/bomb.wav')!, 0.2)
 
-		this.isPrecise = Input.get(Settings.get('KEYBIND_precise'))
-		const speed = this.isPrecise ? 0.25 : 0.5
-
-		this.position.add(input.multiply(speed * dt))
+		Player.update(dt)
 	}
 
 	protected draw(): void {
 		this.context.fillStyle = '#000'
 		this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
 
-		this.context.fillStyle = this.isPrecise ? '#fff' : '#ff0'
-		this.context.beginPath()
-		this.context.arc(this.position.x, this.position.y, 5, 0, Math.PI * 2, false)
-		this.context.fill()
+		Player.draw(this.context)
 
 		if (this.track) {
 			const string = `${this.track.currentTime.toFixed(3)}/${this.track.duration.toFixed(
@@ -80,7 +73,19 @@ export default class BHEngine extends GameLoop {
 			this.context.fillStyle = '#f00'
 			this.context.font = '24px Arial'
 			this.context.fillText(string, 0, 32)
+		} else {
+			const string = `Loading music...`
+			this.context.fillStyle = '#f00'
+			this.context.font = '24px Arial'
+			this.context.fillText(string, 0, 32)
 		}
+
+		this.context.fillText('C to change controller', 0, 64)
+		this.context.fillText(
+			'Current: ' + (Settings.get('mouseControl') ? 'Mouse' : 'Keyboard'),
+			0,
+			90
+		)
 	}
 
 	protected onPause(): void {}
@@ -88,7 +93,11 @@ export default class BHEngine extends GameLoop {
 	protected onResume(): void {}
 
 	private onResize(): void {
+		const x = this.position.x / this.canvas.width
+		const y = this.position.y / this.canvas.height
 		this.canvas.height = innerHeight
 		this.canvas.width = innerHeight * (9 / 16)
+		this.position.x = x * this.canvas.width
+		this.position.y = y * this.canvas.height
 	}
 }
