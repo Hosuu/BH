@@ -38,10 +38,10 @@ export default abstract class GameLoop {
 		GameLoop.instance = this
 	}
 
-	public abstract update?(dt: number): void
-	public abstract draw?(): void
-	public abstract onPause?(): void
-	public abstract onResume?(): void
+	protected abstract update?(dt: number): void
+	protected abstract draw?(): void
+	protected abstract onPause?(): void
+	protected abstract onResume?(): void
 
 	protected static mainLoop(timeStamp: DOMHighResTimeStamp): void {
 		const dt: number = timeStamp - (this.lastUpdateTimeStamp ?? timeStamp)

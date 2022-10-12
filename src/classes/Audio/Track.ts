@@ -31,6 +31,10 @@ export default class Track {
 		this._playbackRate = 1
 	}
 
+	private onEnd(): void {
+		if (this.progress >= 1) this.seek(this.duration).pause()
+	}
+
 	public play(): Track {
 		if (this.sourceNode) return this
 
@@ -39,6 +43,7 @@ export default class Track {
 		this.sourceNode.playbackRate.value = this._playbackRate
 
 		this.sourceNode.connect(this.customInputNode ?? this.panNode)
+		this.sourceNode.onended = this.onEnd.bind(this)
 
 		if (this.pausedAt) {
 			this.startedAt = Audio.context.currentTime - this.pausedAt / this._playbackRate
@@ -98,6 +103,10 @@ export default class Track {
 
 	public get progress(): number {
 		return this.currentTime / this.duration
+	}
+
+	public get isPaused(): boolean {
+		return Boolean(!this.sourceNode)
 	}
 
 	////////////////////////////

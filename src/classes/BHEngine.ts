@@ -32,16 +32,20 @@ export default class BHEngine extends GameLoop {
 		this.track = null
 		Samples.load('./assets/mp3/Intersect Thunderbolt.mp3').then(() => {
 			this.track = new Track(Samples.get('./assets/mp3/Intersect Thunderbolt.mp3')!)
-			this.track.play()
-			this.track.playbackRate = 1
 		})
+
+		addEventListener('resize', this.onResize.bind(this))
 	}
 
 	public static getInstance(): BHEngine {
 		return this.instance as BHEngine
 	}
 
-	public update(dt: number): void {
+	protected update(dt: number): void {
+		if (!this.track) return
+		if (this.track.isPaused && Input.getAnyKeyDown()) this.track.play()
+		if (this.track.isPaused) return
+
 		const input = new Vector2()
 		input.add(Vector2.RIGHT.multiply(+Input.get(Settings.get('KEYBIND_moveRight'))))
 		input.add(Vector2.LEFT.multiply(+Input.get(Settings.get('KEYBIND_moveLeft'))))
@@ -60,7 +64,7 @@ export default class BHEngine extends GameLoop {
 		this.position.add(input.multiply(speed * dt))
 	}
 
-	public draw(): void {
+	protected draw(): void {
 		this.context.fillStyle = '#000'
 		this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
 
@@ -79,7 +83,12 @@ export default class BHEngine extends GameLoop {
 		}
 	}
 
-	public onPause(): void {}
+	protected onPause(): void {}
 
-	public onResume(): void {}
+	protected onResume(): void {}
+
+	private onResize(): void {
+		this.canvas.height = innerHeight
+		this.canvas.width = innerHeight * (9 / 16)
+	}
 }
