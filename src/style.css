@@ -1,0 +1,18 @@
+*,
+*::before,
+*::after {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	background: #232323;
+	overflow: hidden;
+	display: flex;
+	justify-content: center;
+}
+
+canvas {
+	margin: auto;
+}
