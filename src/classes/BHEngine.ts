@@ -29,6 +29,7 @@ export default class BHEngine extends GameLoop {
 		this.context = ctx
 		this.position = new Vector2(canvas.width * 0.5, canvas.height * 0.8)
 		this.isPrecise = false
+		this.track = null
 		Samples.load('./assets/mp3/Intersect Thunderbolt.mp3').then(() => {
 			this.track = new Track(Samples.get('./assets/mp3/Intersect Thunderbolt.mp3')!)
 			this.track.play()
