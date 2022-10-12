@@ -1,3 +1,5 @@
+import Samples from './Audio/Samples'
+import Track from './Audio/Track'
 import GameLoop from './GameLoop'
 import Input from './static/Input'
 import Settings from './static/Settings'
@@ -8,6 +10,8 @@ export default class BHEngine extends GameLoop {
 	public context: CanvasRenderingContext2D
 
 	public position: Vector2
+	public isPrecise: boolean
+	public track: Track | null
 
 	constructor() {
 		super()
@@ -23,7 +27,13 @@ export default class BHEngine extends GameLoop {
 
 		this.canvas = canvas
 		this.context = ctx
-		this.position = new Vector2()
+		this.position = new Vector2(canvas.width * 0.5, canvas.height * 0.8)
+		this.isPrecise = false
+		Samples.load('./assets/mp3/Intersect Thunderbolt.mp3').then(() => {
+			this.track = new Track(Samples.get('./assets/mp3/Intersect Thunderbolt.mp3')!)
+			this.track.play()
+			this.track.playbackRate = 1
+		})
 	}
 
 	public static getInstance(): BHEngine {
@@ -38,8 +48,13 @@ export default class BHEngine extends GameLoop {
 		input.add(Vector2.DOWN.multiply(+Input.get(Settings.get('KEYBIND_moveDown'))))
 		input.normalize()
 
-		const isPrecise = Input.get(Settings.get('KEYBIND_precise'))
-		const speed = isPrecise ? 0.25 : 0.5
+		const mouseWheel = Input.getMouseWheel()
+		if (this.track && mouseWheel.frame === GameLoop.getCurrentFrameId() - 1) {
+			this.track.playbackRate += mouseWheel.y / 1000
+		}
+
+		this.isPrecise = Input.get(Settings.get('KEYBIND_precise'))
+		const speed = this.isPrecise ? 0.25 : 0.5
 
 		this.position.add(input.multiply(speed * dt))
 	}
@@ -48,10 +63,19 @@ export default class BHEngine extends GameLoop {
 		this.context.fillStyle = '#000'
 		this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
 
-		this.context.fillStyle = '#ff0'
+		this.context.fillStyle = this.isPrecise ? '#fff' : '#ff0'
 		this.context.beginPath()
 		this.context.arc(this.position.x, this.position.y, 5, 0, Math.PI * 2, false)
 		this.context.fill()
+
+		if (this.track) {
+			const string = `${this.track.currentTime.toFixed(3)}/${this.track.duration.toFixed(
+				3
+			)} | ${this.track.playbackRate}x`
+			this.context.fillStyle = '#f00'
+			this.context.font = '24px Arial'
+			this.context.fillText(string, 0, 32)
+		}
 	}
 
 	public onPause(): void {}
