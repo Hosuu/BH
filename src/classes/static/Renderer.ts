@@ -47,7 +47,6 @@ export default class Renderer {
 		const { x, y } = point
 		const { x: brx, y: bry } = this.boundingRect
 		const scale = this.getScale()
-		console.log(x, brx, y, bry, scale)
 
 		return new Vector2((x - brx) / scale, (y - bry) / scale)
 	}

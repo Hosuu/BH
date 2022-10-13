@@ -2,7 +2,7 @@ import { GAME_HEIGHT, GAME_WIDTH } from '../constants'
 import Samples from './Audio/Samples'
 import GameLoop from './GameLoop'
 import GameManager from './GameManager'
-import Input, { Button, Key } from './static/Input'
+import Input, { Key } from './static/Input'
 import Renderer from './static/Renderer'
 import Settings from './static/Settings'
 
@@ -26,9 +26,6 @@ export default class BHEngine extends GameLoop {
 	protected update(dt: number): void {
 		if (Input.getDown(Key.C)) Settings.set('mouseControl', !Settings.get('mouseControl'))
 		this.gameManager.update(dt)
-
-		if (Input.getDown(Button.Left))
-			console.log(Renderer.screenToGamePoint(Input.getCursorPosition()))
 	}
 
 	protected draw(): void {
