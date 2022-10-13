@@ -74,8 +74,9 @@ export default class GameManager {
 
 		//Progress bar
 		ctx.save()
+		ctx.font = '24px Arial'
 		ctx.fillStyle = '#66f'
-		ctx.fillRect(0, GAME_HEIGHT - 5, GAME_HEIGHT * this.track.progress, 5)
+		ctx.fillRect(0, GAME_HEIGHT - 5, GAME_WIDTH * this.track.progress, 5)
 		ctx.fillText(formatTime(this.track.currentTime), 5, GAME_HEIGHT - 15)
 		ctx.textAlign = 'right'
 		ctx.fillText(formatTime(this.track.duration), GAME_WIDTH - 5, GAME_HEIGHT - 15)
