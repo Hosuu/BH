@@ -1,3 +1,5 @@
+import { GAME_HEIGHT, GAME_WIDTH } from '../constants'
+import { formatTime } from '../utils'
 import Samples from './audio/Samples'
 import Track from './audio/Track'
 import Projectile from './Projectile'
@@ -61,11 +63,23 @@ export default class GameManager {
 			ctx.fillStyle = '#f00'
 			ctx.fillText('Any button to start', 0, 32)
 			return
+		} else {
+			ctx.fillStyle = '#f00'
+			ctx.fillText(`Bombs: ${Player.getBombsLeft()}`, 0, GAME_HEIGHT - 64)
 		}
 		ctx.restore()
 
 		for (const proj of this.projectiles) proj.draw()
 		Player.draw()
+
+		//Progress bar
+		ctx.save()
+		ctx.fillStyle = '#66f'
+		ctx.fillRect(0, GAME_HEIGHT - 5, GAME_HEIGHT * this.track.progress, 5)
+		ctx.fillText(formatTime(this.track.currentTime), 5, GAME_HEIGHT - 15)
+		ctx.textAlign = 'right'
+		ctx.fillText(formatTime(this.track.duration), GAME_WIDTH - 5, GAME_HEIGHT - 15)
+		ctx.restore()
 	}
 
 	public useBomb() {}

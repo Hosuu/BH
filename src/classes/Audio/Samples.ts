@@ -14,7 +14,7 @@ export default class Samples {
 
 	public static load(path: string): Promise<string> {
 		return new Promise((res, rej) => {
-			if (this.collection.has(path)) console.log(`Overwriting ${path}`)
+			if (this.collection.has(path)) return console.log('This file is already loaded')
 
 			fetch(path)
 				.then((res) => res.arrayBuffer())

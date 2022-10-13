@@ -11,5 +11,5 @@ export default {
 
 	//Gameplay
 	autoBomb: false,
-	mouseControl: true,
+	mouseControl: false,
 }

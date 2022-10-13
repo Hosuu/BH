@@ -85,6 +85,10 @@ export default class Player {
 		return this.hitbox
 	}
 
+	public static getBombsLeft(): number {
+		return this.bombs
+	}
+
 	public static onHit(object: Projectile) {
 		if (Settings.get('autoBomb') && this.bombs > 0) {
 			GameManager.instance.useBomb()
