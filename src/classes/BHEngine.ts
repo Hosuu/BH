@@ -1,5 +1,5 @@
 import { GAME_HEIGHT, GAME_WIDTH } from '../constants'
-import Samples from './audio/Samples'
+import Samples from './Audio/Samples'
 import GameLoop from './GameLoop'
 import GameManager from './GameManager'
 import Input, { Button, Key } from './static/Input'

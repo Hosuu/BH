@@ -6,8 +6,8 @@ import {
 	PLAYER_SPEED,
 } from '../../constants'
 import { clamp } from '../../utils'
-import Audio from '../audio/Audio'
-import Samples from '../audio/Samples'
+import Audio from '../Audio/Audio'
+import Samples from '../Audio/Samples'
 import GameManager from '../GameManager'
 import Circle from '../geometry2D/Circle'
 import Vector2 from '../geometry2D/Vector2'
