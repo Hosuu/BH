@@ -6,6 +6,7 @@ export default class Polygon {
 	public angle: number
 
 	constructor(vertecies: Vector2[], origin?: Vector2, angle?: number) {
+		this.vertecies = []
 		this.origin = origin ?? Vector2.sum(...vertecies).divide(vertecies.length)
 		this.angle = angle ?? 0
 		for (const vert of vertecies) {

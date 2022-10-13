@@ -5,19 +5,28 @@ import Vector2 from './Vector2'
 
 export default class BoundingBox {
 	private vertecies: Vector2[]
-	private width: number
-	private height: number
-	private area: number
-	private topY: number
-	private bottomY: number
-	private leftX: number
-	private rightX: number
-	private centerPoint: Vector2
-	private path2D: Path2D
+	private width: number | null
+	private height: number | null
+	private area: number | null
+	private topY: number | null
+	private bottomY: number | null
+	private leftX: number | null
+	private rightX: number | null
+	private centerPoint: Vector2 | null
+	private path2D: Path2D | null
 
 	//Constructors
 	private constructor(vertecies: Vector2[]) {
 		this.vertecies = vertecies
+		this.width = null
+		this.height = null
+		this.area = null
+		this.topY = null
+		this.bottomY = null
+		this.leftX = null
+		this.rightX = null
+		this.centerPoint = null
+		this.path2D = null
 	}
 
 	public static fromCircle(circle: Circle): BoundingBox {
