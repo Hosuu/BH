@@ -64,8 +64,8 @@ export default class GameManager {
 		}
 		ctx.restore()
 
-		for (const proj of this.projectiles) proj.draw(ctx)
-		Player.draw(ctx)
+		for (const proj of this.projectiles) proj.draw()
+		Player.draw()
 	}
 
 	public useBomb() {}

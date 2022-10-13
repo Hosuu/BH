@@ -1,7 +1,15 @@
-import { GAME_HEIGHT, GAME_WIDTH } from '../../constants'
+import {
+	GAME_HEIGHT,
+	GAME_WIDTH,
+	PLAYER_PRECISE_SPEED,
+	PLAYER_RADIUS,
+	PLAYER_SPEED,
+} from '../../constants'
+import { clamp } from '../../utils'
 import Audio from '../audio/Audio'
 import Samples from '../audio/Samples'
 import GameManager from '../GameManager'
+import Circle from '../geometry2D/Circle'
 import Vector2 from '../geometry2D/Vector2'
 import Projectile from '../Projectile'
 import Input, { Button } from './Input'
@@ -13,12 +21,14 @@ export default class Player {
 	private static input: Vector2
 	private static preciseMode: boolean
 	private static bombs: number
+	private static hitbox: Circle
 
 	public static init(bombs: number) {
 		this.position = new Vector2(GAME_WIDTH / 2, GAME_HEIGHT / 2)
 		this.input = new Vector2()
 		this.preciseMode = false
 		this.bombs = bombs
+		this.hitbox = new Circle(this.position, PLAYER_RADIUS)
 	}
 
 	public static update(dt: number) {
@@ -27,7 +37,7 @@ export default class Player {
 			Input.get(Settings.get('KEYBIND_precise')) ||
 			(Settings.get('mouseControl') && Input.get(Button.Left))
 
-		const speed = this.preciseMode ? 0.25 : 0.45
+		const speed = this.preciseMode ? PLAYER_PRECISE_SPEED : PLAYER_SPEED
 
 		//Direction
 		this.input.set(0, 0)
@@ -55,17 +65,24 @@ export default class Player {
 		}
 
 		this.position.add(this.input)
+		this.position.x = clamp(this.position.x, 0, GAME_WIDTH)
+		this.position.y = clamp(this.position.y, 0, GAME_HEIGHT)
 	}
 
-	public static draw(ctx: CanvasRenderingContext2D) {
+	public static draw() {
+		const ctx = Renderer.getContext()
 		ctx.save()
 
 		ctx.fillStyle = this.preciseMode ? '#fff' : '#ff0'
 		ctx.beginPath()
-		ctx.arc(this.position.x, this.position.y, 5, 0, Math.PI * 2, false)
+		ctx.arc(this.position.x, this.position.y, PLAYER_RADIUS, 0, Math.PI * 2, false)
 		ctx.fill()
 
 		ctx.restore()
+	}
+
+	public static getHitbox(): Circle {
+		return this.hitbox
 	}
 
 	public static onHit(object: Projectile) {
