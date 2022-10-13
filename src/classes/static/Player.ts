@@ -1,10 +1,11 @@
+import { GAME_HEIGHT, GAME_WIDTH } from '../../constants'
 import Audio from '../audio/Audio'
 import Samples from '../audio/Samples'
-import BHEngine from '../BHEngine'
 import GameManager from '../GameManager'
 import Vector2 from '../geometry2D/Vector2'
 import Projectile from '../Projectile'
 import Input, { Button } from './Input'
+import Renderer from './Renderer'
 import Settings from './Settings'
 
 export default class Player {
@@ -13,11 +14,11 @@ export default class Player {
 	private static preciseMode: boolean
 	private static bombs: number
 
-	static {
-		this.position = new Vector2()
+	public static init(bombs: number) {
+		this.position = new Vector2(GAME_WIDTH / 2, GAME_HEIGHT / 2)
 		this.input = new Vector2()
 		this.preciseMode = false
-		this.bombs = 3
+		this.bombs = bombs
 	}
 
 	public static update(dt: number) {
@@ -26,14 +27,12 @@ export default class Player {
 			Input.get(Settings.get('KEYBIND_precise')) ||
 			(Settings.get('mouseControl') && Input.get(Button.Left))
 
-		const speed = this.preciseMode ? 0.25 : 0.5
+		const speed = this.preciseMode ? 0.25 : 0.45
 
 		//Direction
 		this.input.set(0, 0)
 		if (Settings.get('mouseControl')) {
-			const mousePos = Input.getCursorPosition()
-			const { x, y } = BHEngine.getInstance().canvas.getBoundingClientRect()
-			mousePos.subtract(new Vector2(x, y))
+			const mousePos = Renderer.screenToGamePoint(Input.getCursorPosition())
 			const vecToMouse = mousePos.subtract(this.position)
 			this.input = vecToMouse.getNormalized().multiply(speed * dt)
 
@@ -65,6 +64,8 @@ export default class Player {
 		ctx.beginPath()
 		ctx.arc(this.position.x, this.position.y, 5, 0, Math.PI * 2, false)
 		ctx.fill()
+
+		ctx.restore()
 	}
 
 	public static onHit(object: Projectile) {

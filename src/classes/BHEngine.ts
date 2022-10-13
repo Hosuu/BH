@@ -1,41 +1,22 @@
+import { GAME_HEIGHT, GAME_WIDTH } from '../constants'
 import Samples from './audio/Samples'
 import GameLoop from './GameLoop'
 import GameManager from './GameManager'
-import Vector2 from './geometry2D/Vector2'
-import Input, { Key } from './static/Input'
+import Input, { Button, Key } from './static/Input'
+import Renderer from './static/Renderer'
 import Settings from './static/Settings'
 
 export default class BHEngine extends GameLoop {
-	public canvas: HTMLCanvasElement
-	public context: CanvasRenderingContext2D
-
 	public gameManager: GameManager
-
-	public position: Vector2
-	public isPrecise: boolean
 
 	constructor() {
 		super()
 		GameLoop.instance = this
 
-		const canvas = document.createElement('canvas')
-		canvas.height = innerHeight
-		canvas.width = innerHeight * (9 / 16)
-		document.querySelector('#app')!.append(canvas)
-		const ctx = canvas.getContext('2d')!
-		ctx.fillStyle = '#000'
-		ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-		this.canvas = canvas
-		this.context = ctx
-		this.position = new Vector2(canvas.width * 0.5, canvas.height * 0.8)
-		this.isPrecise = false
 		Samples.batchLoad(['./assets/mp3/bomb.wav'])
 
 		this.gameManager = new GameManager()
 		this.gameManager.init('./assets/mp3/Intersect Thunderbolt.mp3')
-
-		addEventListener('resize', this.onResize.bind(this))
 	}
 
 	public static getInstance(): BHEngine {
@@ -45,32 +26,31 @@ export default class BHEngine extends GameLoop {
 	protected update(dt: number): void {
 		if (Input.getDown(Key.C)) Settings.set('mouseControl', !Settings.get('mouseControl'))
 		this.gameManager.update(dt)
+
+		if (Input.getDown(Button.Left))
+			console.log(Renderer.screenToGamePoint(Input.getCursorPosition()))
 	}
 
 	protected draw(): void {
-		this.context.fillStyle = '#000'
-		this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
+		const ctx = Renderer.getContext()
 
-		this.context.fillText('C to change controller', 0, 64)
-		this.context.fillText(
-			'Current: ' + (Settings.get('mouseControl') ? 'Mouse' : 'Keyboard'),
-			0,
-			90
-		)
+		//Clear screen
+		ctx.save()
+		ctx.fillStyle = '#000'
+		ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT)
+		ctx.restore()
 
-		this.gameManager.draw(this.context)
+		ctx.save()
+		ctx.font = '24px Arial'
+		ctx.fillStyle = '#f00'
+		ctx.fillText('C to change controller', 0, 64)
+		ctx.fillText('Current: ' + (Settings.get('mouseControl') ? 'Mouse' : 'Keyboard'), 0, 90)
+		ctx.restore()
+
+		this.gameManager.draw(ctx)
 	}
 
 	protected onPause(): void {}
 
 	protected onResume(): void {}
-
-	private onResize(): void {
-		const x = this.position.x / this.canvas.width
-		const y = this.position.y / this.canvas.height
-		this.canvas.height = innerHeight
-		this.canvas.width = innerHeight * (9 / 16)
-		this.position.x = x * this.canvas.width
-		this.position.y = y * this.canvas.height
-	}
 }

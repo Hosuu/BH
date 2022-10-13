@@ -22,10 +22,11 @@ export default class GameManager {
 	}
 
 	public async init(m: string) {
+		Player.init(3)
 		console.log('Loading file: ' + m)
 		await Samples.load(m)
 		this.track = new Track(Samples.get(m)!)
-		this.track.volume = 0.01
+		this.track.volume = 0.2
 	}
 
 	public play(): void {
@@ -48,16 +49,20 @@ export default class GameManager {
 	}
 
 	public draw(ctx: CanvasRenderingContext2D) {
+		ctx.save()
+		ctx.font = '24px Arial'
+
 		if (!this.track) {
 			ctx.fillStyle = '#f00'
-			ctx.fillText('Loading...', 0, 64)
+			ctx.fillText('Loading music file', 0, 32)
 			return
 		}
 		if (!this.isPlaying) {
 			ctx.fillStyle = '#f00'
-			ctx.fillText('Any button to start', 0, 64)
+			ctx.fillText('Any button to start', 0, 32)
 			return
 		}
+		ctx.restore()
 
 		for (const proj of this.projectiles) proj.draw(ctx)
 		Player.draw(ctx)
