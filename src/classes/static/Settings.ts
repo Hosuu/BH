@@ -39,8 +39,6 @@ export default class Settings {
 		if (value !== defaultSettings[key]) this.current[key] = value
 		else delete this.current[key]
 
-		console.log(this.current)
-
 		this.emitChange(key, value, prevValue)
 	}
 

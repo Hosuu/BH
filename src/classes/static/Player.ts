@@ -1,4 +1,7 @@
+import Audio from '../audio/Audio'
+import Samples from '../audio/Samples'
 import BHEngine from '../BHEngine'
+import GameManager from '../GameManager'
 import Vector2 from '../geometry2D/Vector2'
 import Projectile from '../Projectile'
 import Input, { Button } from './Input'
@@ -46,6 +49,12 @@ export default class Player {
 			this.input.normalize().multiply(speed * dt)
 		}
 
+		if (Input.getDown(Settings.get('KEYBIND_bomb')) && this.bombs > 0) {
+			Audio.playSample(Samples.get('./assets/mp3/bomb.wav')!, 0.2)
+			GameManager.instance.useBomb()
+			this.bombs--
+		}
+
 		this.position.add(this.input)
 	}
 
@@ -60,7 +69,8 @@ export default class Player {
 
 	public static onHit(object: Projectile) {
 		if (Settings.get('autoBomb') && this.bombs > 0) {
-			//Use bomb
+			GameManager.instance.useBomb()
+			this.bombs--
 			return
 		}
 		console.log(object)
